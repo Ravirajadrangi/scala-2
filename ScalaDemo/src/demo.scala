@@ -3,6 +3,7 @@ import java.util
 import java.util.{TimeZone, Calendar}
 import java.util.stream.{StreamSpliterators, IntStream}
 
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.internal.util.StringOps
 import scala.util.Sorting
@@ -176,9 +177,111 @@ object demo {
         var nativeFlavours: util.List[String] = flavours.getNativesForFlavor(DataFlavor.imageFlavor)
 
         println(nativeFlavours.toArray.mkString(",\n"))
+
+        var codes= new mutable.LinkedHashMap[String, Int]()
+        for(i <- 1 to 50){
+          val value = i.toString
+          codes += (value -> value.codePoints().sum())
+        }
+
+        println(codes.mkString(", \n"))
+
+        //Map exercises
+        val laptopBrands: Array[String] = Array("Asus", "Dell", "Apple", "HP")
+        val laptopPrices : Array[Double] = Array(1250.99, 1150.99, 1350.50, 1299.99)
+
+        var priceTag = new mutable.LinkedHashMap[String, Double]()
+        var discountedPriceTag = new mutable.LinkedHashMap[String, Double]()
+
+        for(i <- laptopBrands.indices){
+          priceTag += (laptopBrands(i) -> laptopPrices(i))
+          discountedPriceTag += (laptopBrands(i) -> (laptopPrices(i) - laptopPrices(i) * 0.1))
+        }
+
+        println(priceTag.mkString(", \n"))
+        println()
+        println(discountedPriceTag.mkString(", \n"))
+
+        var counter: Counter = new Counter(-10)
+
+
+        for (i <- 1 to 10) counter.increment
+
+        println(counter.current)
+
+        val bankAccount: BankAccount = new BankAccount
+
+        bankAccount.deposit(15.0)
+        bankAccount.withdraw(30)
+        println(bankAccount.toString)
+
+        val time1: Time = new Time(15, 30)
+        val time2: Time = new Time(15, 25)
+
+        println(if(time1.before(time2)) time1 else time2)
 */
 
 
+
+    }
+
+  //Exercise classes
+  class Counter(val value: Int){
+    private var _value: Int = {
+      if (value < 0){
+        value * (- 1)
+      }else{
+        value
+      }
+    }
+
+    def increment():Unit={
+      _value += 1
+    }
+
+    def current = _value
+  }
+
+  class BankAccount{
+    private var _balance : Double = 0
+
+    def deposit (value: Double): Unit={
+      _balance += value
+    }
+    def withdraw (value: Double): Unit={
+      _balance -= value
+    }
+
+    def balance = _balance
+
+    override def toString = s"Balance: ${_balance}\nDebt: ${if (_balance < 0) _balance else 0}"
+  }
+
+  class Time(val hours_ : Int, val minutes_ : Int){
+    private val _hours: Int = if(hours_ > 0 && hours_ < 23)hours_ else 0
+    private val _minutes: Int = if(minutes_ > 0 && minutes_ < 59)minutes_ else 0
+
+    def hours = _hours
+    def minutes = _minutes
+
+    def before(other: Time): Boolean ={
+      this.timeKey(this.hours, this.minutes) < this.timeKey(other.hours, other.minutes)
+    }
+
+    private def timeKey(hours: Int, minutes: Int): Int={
+      hours * 100 + minutes
+    }
+
+    override def toString = s"${_hours}:${_minutes}"
+  }
+
+  //Example Object
+  class Person(val name: String, val age: Int){
+    private val _name : String = name.capitalize
+    private var _age : Int = age
+
+    //override def toString = s"Name: $_name \n Age:$_age"
   }
 
 }
+
